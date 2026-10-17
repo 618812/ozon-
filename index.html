@@ -247,6 +247,7 @@ async function loadSessionState(user) {
  if(!user) {
    $('calculatorLayout').classList.add('hidden'); $('membership').classList.add('hidden'); $('accountBar').classList.add('hidden'); $('adminPanel').classList.add('hidden');
    $('authPanel').classList.remove('hidden'); $('authPassword').value='';
+   const lock=$('accessLock'); if(lock) lock.classList.add('hidden');
    return;
  }
  $('authPanel').classList.add('hidden');
