@@ -65,7 +65,7 @@
       <article class="plan featured"><span class="plan-label">灵活选择</span><h3>季度会员</h3><div class="plan-price">¥29.9</div><div class="plan-period">有效期 3 个月</div><ul><li>全部计算功能开放</li><li>会员期间不限计算次数</li><li>适合持续经营的卖家</li></ul><button class="btn buy-plan" data-plan="季度会员 ¥29.9" type="button">微信购买</button></article>
       <article class="plan"><h3>年度会员</h3><div class="plan-price">¥99</div><div class="plan-period">有效期 12 个月</div><ul><li>全部计算功能开放</li><li>会员期间不限计算次数</li><li>长期使用更省心</li></ul><button class="btn buy-plan" data-plan="年度会员 ¥99" type="button">微信购买</button></article>
     </div>
-    <p class="membership-note">会员权益：全部计算功能开放，会员有效期内不限次数使用。付款后请以实际开通通知为准。当前为会员页面展示原型，微信收款信息、订单核验及自动开通功能尚未接入；免费体验记录保存在当前浏览器中，清除浏览器数据或更换设备可能重置，不能作为正式的防重复试用机制。</p>
+    <p class="membership-note">会员权益：全部计算功能开放，会员有效期内不限次数使用。微信联系：15081294182。付款后请以实际开通通知为准。当前为会员页面展示原型，微信收款、订单核验及自动开通功能尚未接入；免费体验记录保存在当前浏览器中，清除浏览器数据或更换设备可能重置，不能作为正式的防重复试用机制。</p>
   </section>
 </div>
 <script>
@@ -173,7 +173,7 @@ function updateTrialUI(){
  else{title.textContent='免费体验已结束';desc.textContent='选择下方任一套餐，继续不限次数使用全部计算功能。';status.textContent='体验期已到期';btn.textContent='体验已结束';btn.disabled=true;}
 }
 $('startTrial').addEventListener('click',()=>{if(!localStorage.getItem(trialKey)){localStorage.setItem(trialKey,String(Date.now()));updateTrialUI();}});
-document.querySelectorAll('.buy-plan').forEach(btn=>btn.addEventListener('click',()=>{alert('你选择了：'+btn.dataset.plan+'\n\n当前网站还没有配置微信收款码/商户支付及会员自动开通。请先联系网站管理员完成收款信息配置，避免用户付款后无法自动开通。');}));
+document.querySelectorAll('.buy-plan').forEach(btn=>btn.addEventListener('click',()=>{alert('你选择了：'+btn.dataset.plan+'\n\n请添加微信联系购买：15081294182\n\n目前网站尚未接入自动收款和会员自动开通，请联系后按实际通知完成开通。');}));
 updateTrialUI();
 $('calc').addEventListener('click',calculate);
 ['cost','margin','weight','commission','labelFee','rate','length','width','height'].forEach(id=>$(id).addEventListener('input',()=>{if($('routes').children.length>0)calculate()}));
