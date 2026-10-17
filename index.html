@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OZON 售价计算器</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#697586;--line:#e5eaf1;--blue:#2864e8;--blue2:#eaf1ff;--green:#14804a;--greenbg:#eaf8f0;--orange:#a65b00;--orangebg:#fff5e5;--shadow:0 8px 28px rgba(20,35,70,.06)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 18px 48px}.top{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:22px}.eyebrow{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--blue);text-transform:uppercase}.top h1{margin:7px 0 8px;font-size:clamp(26px,4vw,36px);letter-spacing:-.03em}.top p{margin:0;color:var(--muted);line-height:1.6}.pill{background:#e8eefb;color:#3455a5;border-radius:99px;padding:8px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+.layout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:18px;align-items:start}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--shadow)}.card h2{font-size:17px;margin:0 0 5px}.sub{font-size:13px;color:var(--muted);line-height:1.55;margin:0 0 18px}.field{margin-bottom:15px}.field label{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:650;margin-bottom:7px}.field label small{font-weight:400;color:var(--muted)}.input-wrap{display:flex;align-items:center;border:1px solid #dbe2ec;border-radius:10px;background:#fff;overflow:hidden}.input-wrap:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(40,100,232,.1)}.input-wrap input{border:0;outline:0;width:100%;min-width:0;padding:12px 12px;font-size:15px;color:var(--text);background:transparent}.unit{padding:0 12px;color:var(--muted);font-size:13px;white-space:nowrap}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.divider{height:1px;background:var(--line);margin:19px 0}.btn{width:100%;border:0;border-radius:11px;background:var(--blue);color:#fff;padding:13px 16px;font-weight:750;font-size:15px;cursor:pointer;box-shadow:0 5px 14px rgba(40,100,232,.18)}.btn:hover{filter:brightness(.97)}.smallnote{font-size:11px;line-height:1.55;color:var(--muted);margin:12px 0 0}.result-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}.result-head h2{margin-bottom:5px}.status{font-size:12px;color:var(--green);background:var(--greenbg);border-radius:99px;padding:6px 9px;font-weight:700}.hero{margin-top:18px;padding:19px;border-radius:15px;background:linear-gradient(135deg,#1e56d8,#3979f6);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:16px}.hero .label{font-size:13px;color:#dce7ff}.price{font-size:clamp(30px,5vw,42px);font-weight:800;letter-spacing:-.04em;margin:5px 0}.hero .hint{font-size:12px;color:#dce7ff}.hero-right{text-align:right}.hero-right strong{display:block;font-size:20px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}.stat{border:1px solid var(--line);border-radius:12px;padding:13px}.stat span{font-size:12px;color:var(--muted);display:block;margin-bottom:7px}.stat strong{font-size:18px;letter-spacing:-.02em}.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:25px 0 12px}.section-title h3{margin:0;font-size:16px}.section-title span{font-size:12px;color:var(--muted)}.routes{display:grid;gap:10px}.route{border:1px solid var(--line);border-radius:13px;padding:15px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}.route.recommended{border-color:#87cba7;background:#fbfffc}.route-name{font-weight:750;font-size:14px;margin-bottom:5px}.route-meta{font-size:12px;color:var(--muted);line-height:1.55}.route-right{text-align:right;min-width:115px}.route-fee{font-size:20px;font-weight:800;letter-spacing:-.03em}.tag{display:inline-block;font-size:10px;font-weight:750;border-radius:99px;padding:4px 7px;margin-left:5px;background:var(--blue2);color:var(--blue);vertical-align:middle}.tag.green{background:var(--greenbg);color:var(--green)}.route-bottom{grid-column:1/-1;display:flex;gap:16px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}.route-bottom b{color:var(--text);font-size:13px}.empty{border:1px dashed #cbd5e1;border-radius:13px;padding:24px;text-align:center;color:var(--muted);font-size:13px;line-height:1.65}.alert{border-radius:12px;padding:12px 14px;font-size:12px;line-height:1.6;margin-top:12px}.alert.warn{background:var(--orangebg);color:var(--orange)}.alert.info{background:#f0f5ff;color:#3c5794}.fineprint{margin-top:18px;border-top:1px solid var(--line);padding-top:14px;font-size:11px;line-height:1.7;color:var(--muted)}details{margin-top:12px}summary{cursor:pointer;color:#4d5b72;font-size:12px;font-weight:650}details p{font-size:12px;line-height:1.7;color:var(--muted)}.hidden{display:none}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.top{align-items:flex-start}.stats{grid-template-columns:1fr 1fr 1fr}.card{padding:18px}}
+@media(max-width:440px){.wrap{padding:20px 12px 32px}.top{display:block}.pill{display:inline-block;margin-top:12px}.stats{grid-template-columns:1fr 1fr}.hero{align-items:flex-start}.hero-right strong{font-size:17px}.route{grid-template-columns:1fr auto}.route-right{min-width:95px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div><div class="eyebrow">Pricing workspace</div><h1>OZON 售价计算器</h1><p>输入成本、目标利润率和重量，自动核算售价，并匹配 CEL 可用运输线路。</p></div>
+    <div class="pill">CEL 资费规则版 · 可本地运行</div>
+  </header>
+  <div class="layout">
+    <section class="card">
+      <h2>商品参数</h2><p class="sub">只需填写基础数据。由于 CEL 运费可能受售价、货值档位和尺寸影响，尺寸及汇率也可以调整。</p>
+      <div class="field"><label for="cost">商品成本 <small>人民币</small></label><div class="input-wrap"><input id="cost" type="number" min="0" step="0.01" value="50"><span class="unit">CNY</span></div></div>
+      <div class="field"><label for="margin">目标利润率 <small>利润 ÷ 售价</small></label><div class="input-wrap"><input id="margin" type="number" min="0" max="90" step="0.5" value="25"><span class="unit">%</span></div></div>
+      <div class="field"><label for="weight">商品重量 <small>实重</small></label><div class="input-wrap"><input id="weight" type="number" min="0.001" step="0.001" value="0.5"><span class="unit">kg</span></div></div>
+      <div class="two">
+        <div class="field"><label for="commission">平台佣金率</label><div class="input-wrap"><input id="commission" type="number" min="0" max="90" step="0.5" value="13"><span class="unit">%</span></div></div>
+        <div class="field"><label for="labelFee">贴单费</label><div class="input-wrap"><input id="labelFee" type="number" min="0" step="0.1" value="2"><span class="unit">¥</span></div></div>
+      </div>
+      <div class="field"><label for="rate">汇率 <small>1 CNY = ? RUB</small></label><div class="input-wrap"><input id="rate" type="number" min="0.01" step="0.1" value="12"><span class="unit">RUB</span></div></div>
+      <div class="divider"></div>
+      <h2>商品尺寸（厘米）</h2><p class="sub">CEL 部分线路有三边和、最长边及体积重限制。请填写包装后的尺寸。</p>
+      <div class="three two">
+        <div class="field"><label for="length">长</label><div class="input-wrap"><input id="length" type="number" min="0" step="0.1" value="30"><span class="unit">cm</span></div></div>
+        <div class="field"><label for="width">宽</label><div class="input-wrap"><input id="width" type="number" min="0" step="0.1" value="10"><span class="unit">cm</span></div></div>
+      </div>
+      <div class="field"><label for="height">高</label><div class="input-wrap"><input id="height" type="number" min="0" step="0.1" value="5"><span class="unit">cm</span></div></div>
+      <button class="btn" id="calc">计算售价与运输方式</button>
+      <p class="smallnote">默认示例汇率为 1 CNY = 12 RUB，仅供试算。请按实际结算汇率调整。报价按所上传 CEL 表中的规则计算，不代表承运商实时确认价。</p>
+    </section>
+    <section class="card">
+      <div class="result-head"><div><h2>计算结果</h2><p class="sub" style="margin-bottom:0">售价与运费联动计算，线路会按售价对应的 RUB 货值档位筛选。</p></div><span class="status">自动核算</span></div>
+      <div id="summary"></div>
+      <div class="section-title"><h3>符合条件的运输方式</h3><span id="routeCount">等待计算</span></div>
+      <div id="routes" class="routes"><div class="empty">填写左侧参数后，点击「计算售价与运输方式」。<br>系统会逐条检查重量、货值和尺寸限制。</div></div>
+      <div id="warnings"></div>
+      <div class="fineprint">
+        <b>计算口径</b><br>
+        利润 = 售价 − 商品成本 − CEL 运费 − 贴单费 − 平台佣金 − 尾程配送费。<br>
+        利润率 = 利润 ÷ 售价。平台佣金默认 13%，可自行修改；尾程配送费按售价的 2% 估算，最高 200 RUB（按汇率折算）。<br>
+        <details><summary>查看 CEL 线路计费说明</summary><p>超级轻小件：0.001–0.5kg，货值 1–1500 RUB，三边和≤90cm、单边≤60cm。低客单价标准件：0.501–30kg，货值 1–1500 RUB，三边和≤150cm、单边≤60cm。小件：≤2kg，货值 1501–7000 RUB，三边和≤150cm、单边≤60cm。大件：2.001–30kg，货值 1501–7000 RUB，三边和≤250cm、单边≤150cm，按实重与体积重（长×宽×高÷12000）取大值。高客单价小件：≤5kg，货值 7001–250000 RUB，三边和≤250cm、单边≤150cm。高客单价大件：5.001–30kg，货值 7001–250000 RUB，三边和≤310cm、单边≤150cm，按实重与体积重取大值。香港线路：≤25kg，货值≤500000 RUB，三边和≤310cm、单边≤150cm；三边和超过60cm时按长×宽×高÷6000计算体积重，百克进位。</p></details>
+      </div>
+    </section>
+  </div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const n = id => Number($(id).value);
+const money = v => new Intl.NumberFormat('zh-CN',{style:'currency',currency:'CNY',minimumFractionDigits:2,maximumFractionDigits:2}).format(v);
+const pct = v => (v*100).toFixed(1)+'%';
+const roundUp = (v, unit) => Math.ceil((v-1e-10)/unit)*unit;
+const routeDefs = [
+ {key:'xs-exp',group:'超级轻小件',name:'CEL Express Extra Small',type:'PUDO 到取货点',speed:'5–10天',tier:[1,1500],weight:[0.001,0.5],sum:90,side:60,rate:45,fixed:3,dim:false,logic:'实重计费'},
+ {key:'xs-std',group:'超级轻小件',name:'CEL Standard Extra Small',type:'PUDO 到取货点',speed:'10–15天',tier:[1,1500],weight:[0.001,0.5],sum:90,side:60,rate:35,fixed:3,dim:false,logic:'实重计费'},
+ {key:'xs-eco',group:'超级轻小件',name:'CEL Economy Extra Small',type:'PUDO 到取货点',speed:'15–25天',tier:[1,1500],weight:[0.001,0.5],sum:90,side:60,rate:25,fixed:3,dim:false,logic:'实重计费'},
+ {key:'budget-exp',group:'低客单价标准件',name:'CEL Express Budget',type:'PUDO 到取货点',speed:'5–10天',tier:[1,1500],weight:[0.501,30],sum:150,side:60,rate:33,fixed:23,dim:false,logic:'实重计费'},
+ {key:'budget-std',group:'低客单价标准件',name:'CEL Standard Budget',type:'PUDO 到取货点',speed:'10–15天',tier:[1,1500],weight:[0.501,30],sum:150,side:60,rate:25,fixed:23,dim:false,logic:'实重计费'},
+ {key:'budget-eco',group:'低客单价标准件',name:'CEL Economy Budget',type:'PUDO 到取货点',speed:'15–25天',tier:[1,1500],weight:[0.501,30],sum:150,side:60,rate:17,fixed:23,dim:false,logic:'实重计费'},
+ ...['Express','Standard','Economy'].flatMap((label,i)=>{const rates=[45,35,25],bases=[16,16,16],labelzh=['特快','标准','经济'];return [{key:'small-'+i,group:'小件',name:'CEL '+label+' Small',type:'PUDO 到取货点',speed:['5–10天','10–15天','15–25天'][i],tier:[1501,7000],weight:[0.001,2],sum:150,side:60,rate:rates[i],fixed:16,dim:false,logic:'实重计费'}, {key:'small-c-'+i,group:'小件',name:'CEL '+label+' Small',type:'Courier 到门',speed:['5–10天','10–15天','15–25天'][i],tier:[1501,7000],weight:[0.001,2],sum:150,side:60,rate:rates[i],fixed:19.5,dim:false,logic:'实重计费'}]}),
+ {key:'big-std',group:'大件',name:'CEL Standard Big',type:'PUDO 到取货点',speed:'10–15天',tier:[1501,7000],weight:[2.001,30],sum:250,side:150,rate:25,fixed:36,dim:true,divisor:12000,logic:'实重与体积重取大值'},
+ {key:'big-std-c',group:'大件',name:'CEL Standard Big',type:'Courier 到门',speed:'10–15天',tier:[1501,7000],weight:[2.001,30],sum:250,side:150,rate:25,fixed:39.5,dim:true,divisor:12000,logic:'实重与体积重取大值'},
+ {key:'big-eco',group:'大件',name:'CEL Economy Big',type:'PUDO 到取货点',speed:'15–25天',tier:[1501,7000],weight:[2.001,30],sum:250,side:150,rate:17,fixed:36,dim:true,divisor:12000,logic:'实重与体积重取大值'},
+ {key:'big-eco-c',group:'大件',name:'CEL Economy Big',type:'Courier 到门',speed:'15–25天',tier:[1501,7000],weight:[2.001,30],sum:250,side:150,rate:17,fixed:39.5,dim:true,divisor:12000,logic:'实重与体积重取大值'},
+ ...['Express','Standard','Economy'].flatMap((label,i)=>{const rates=[45,35,25],fixed=[22,22,22];return [{key:'premium-small-'+i,group:'高客单价小件',name:'CEL '+label+' Premium Small',type:'PUDO 到取货点',speed:['5–10天','10–15天','15–25天'][i],tier:[7001,250000],weight:[0.001,5],sum:250,side:150,rate:rates[i],fixed:22,dim:false,logic:'实重计费'}, {key:'premium-small-c-'+i,group:'高客单价小件',name:'CEL '+label+' Premium Small',type:'Courier 到门',speed:['5–10天','10–15天','15–25天'][i],tier:[7001,250000],weight:[0.001,5],sum:250,side:150,rate:rates[i],fixed:25.5,dim:false,logic:'实重计费'}]}),
+ {key:'premium-big-std',group:'高客单价大件',name:'CEL Standard Premium Big',type:'PUDO 到取货点',speed:'10–15天',tier:[7001,250000],weight:[5.001,30],sum:310,side:150,rate:28,fixed:62,dim:true,divisor:12000,logic:'实重与体积重取大值'},
+ {key:'premium-big-std-c',group:'高客单价大件',name:'CEL Standard Premium Big',type:'Courier 到门',speed:'10–15天',tier:[7001,250000],weight:[5.001,30],sum:310,side:150,rate:28,fixed:65.5,dim:true,divisor:12000,logic:'实重与体积重取大值'},
+ {key:'premium-big-eco',group:'高客单价大件',name:'CEL Economy Premium Big',type:'PUDO 到取货点',speed:'15–25天',tier:[7001,250000],weight:[5.001,30],sum:310,side:150,rate:23,fixed:62,dim:true,divisor:12000,logic:'实重与体积重取大值'},
+ {key:'premium-big-eco-c',group:'高客单价大件',name:'CEL Economy Premium Big',type:'Courier 到门',speed:'15–25天',tier:[7001,250000],weight:[5.001,30],sum:310,side:150,rate:23,fixed:65.5,dim:true,divisor:12000,logic:'实重与体积重取大值'},
+ {key:'hk-exp',group:'中国香港',name:'CEL Express HK',type:'PUDO 到取货点',speed:'7–12天',tier:[1,500000],weight:[0.001,25],sum:310,side:150,rate:96,fixed:19,dim:'hk',logic:'百克进位；三边和>60cm按体积重'},
+ {key:'hk-exp-c',group:'中国香港',name:'CEL Express HK',type:'Courier 到门',speed:'7–12天',tier:[1,500000],weight:[0.001,25],sum:310,side:150,rate:96,fixed:23,dim:'hk',logic:'百克进位；三边和>60cm按体积重'}
+];
+function readInputs(){return {cost:n('cost'),margin:n('margin')/100,weight:n('weight'),commission:n('commission')/100,label:n('labelFee'),rate:n('rate'),dims:[n('length'),n('width'),n('height')].sort((a,b)=>b-a)}}
+function shipping(r, x){
+ const {weight,dims,rate}=x, sum=dims.reduce((a,b)=>a+b,0), max=dims[0];
+ if(weight<r.weight[0]-1e-9 || weight>r.weight[1]+1e-9 || sum>r.sum+1e-9 || max>r.side+1e-9) return null;
+ let bill=weight;
+ if(r.dim===true) bill=Math.max(weight,dims[0]*dims[1]*dims[2]/r.divisor);
+ if(r.dim==='hk' && sum>60) bill=Math.max(weight,dims[0]*dims[1]*dims[2]/6000);
+ if(r.dim==='hk') bill=roundUp(bill,0.1);
+ const fee=bill*r.rate+r.fixed;
+ return {fee,bill,sum,max};
+}
+function solveRoute(r,x){
+ const ship=shipping(r,x); if(!ship)return null;
+ const low=r.tier[0], high=r.tier[1], fx=x.rate;
+ // Try both tail-delivery formulas: 2% of CNY selling price, capped at RUB 200 converted to CNY.
+ let p;
+ for(let i=0;i<3;i++){
+   const rub=p===undefined?((low+high)/2):p*fx;
+   const denom=x.margin + x.commission;
+   const capCny=200/fx;
+   // Candidate using uncapped last mile: profit = p*(1-commission-2%-margin)-fixed costs
+   const uncappedDen=1-x.commission-0.02-x.margin;
+   const fixed=x.cost+ship.fee+x.label;
+   const uncapped=uncappedDen>0?fixed/uncappedDen:Infinity;
+   const cappedDen=1-x.commission-x.margin;
+   const capped=cappedDen>0?(fixed+capCny)/cappedDen:Infinity;
+   // choose formula according to resulting last-mile charge
+   p=(uncapped*0.02<=capCny)?uncapped:capped;
+ }
+ if(!Number.isFinite(p)||p<=0)return null;
+ const rub=p*fx;
+ if(rub<r.tier[0]-1e-7 || rub>r.tier[1]+1e-7) return null;
+ const commission=p*x.commission, tail=Math.min(p*0.02,200/fx);
+ const profit=p-x.cost-ship.fee-x.label-commission-tail;
+ const margin=profit/p;
+ if(margin+1e-6<x.margin)return null;
+ return {...r,...ship,price:p,rub,profit,margin,commission,tail};
+}
+function calculate(){
+ const x=readInputs();
+ const warnings=[];
+ if(!Number.isFinite(x.cost)||x.cost<0||x.margin<0||x.margin>=.9||x.weight<=0||x.commission<0||x.commission>=.9||x.label<0||x.rate<=0||x.dims.some(v=>v<=0)){
+   $('summary').innerHTML='';$('routes').innerHTML='<div class="empty">请检查输入：成本、重量、尺寸、汇率必须有效；利润率与佣金率需小于 90%。</div>';$('routeCount').textContent='参数有误';$('warnings').innerHTML='';return;
+ }
+ const all=routeDefs.map(r=>solveRoute(r,x)).filter(Boolean).sort((a,b)=>a.fee-b.fee);
+ const unique=all.filter((r,i,a)=>a.findIndex(q=>q.key===r.key)===i);
+ if(!unique.length){
+   $('summary').innerHTML='<div class="alert warn">当前参数下，没有找到同时满足目标利润率、货值档位、重量和尺寸限制的 CEL 线路。可以检查尺寸、汇率、目标利润率，或调整商品参数。</div>';
+   $('routes').innerHTML='<div class="empty">没有符合条件的运输方式。<br>注意：售价换算成 RUB 后，必须落在该线路允许的货值区间。</div>';$('routeCount').textContent='0 条线路';$('warnings').innerHTML='';return;
+ }
+ const best=unique[0];
+ $('summary').innerHTML=`<div class="hero"><div><div class="label">推荐参考售价（人民币）</div><div class="price">${money(best.price)}</div><div class="hint">按 ${x.margin*100}% 目标利润率反算 · 货值约 ${best.rub.toFixed(0)} RUB</div></div><div class="hero-right"><div class="label">最低运费方案</div><strong>${money(best.fee)}</strong><div class="hint">${best.name}</div></div></div>
+ <div class="stats"><div class="stat"><span>预计利润</span><strong>${money(best.profit)}</strong></div><div class="stat"><span>预计利润率</span><strong>${pct(best.margin)}</strong></div><div class="stat"><span>尾程配送费</span><strong>${money(best.tail)}</strong></div></div>`;
+ $('routeCount').textContent=unique.length+' 条符合条件';
+ $('routes').innerHTML=unique.map((r,i)=>`<article class="route ${i===0?'recommended':''}">
+ <div><div class="route-name">${r.name}${i===0?'<span class="tag green">运费最低</span>':''}${r.group==='超级轻小件'||r.group==='低客单价标准件'?'<span class="tag">'+r.group+'</span>':''}</div><div class="route-meta">${r.type} · 时效 ${r.speed}<br>计费重量 ${r.bill.toFixed(3)} kg · ${r.logic}</div></div>
+ <div class="route-right"><div class="route-fee">${money(r.fee)}</div><div class="route-meta">国际运费</div></div>
+ <div class="route-bottom"><span>建议售价 <b>${money(r.price)}</b></span><span>预计利润 <b>${money(r.profit)}</b></span><span>利润率 <b>${pct(r.margin)}</b></span><span>售价货值 <b>${Math.round(r.rub).toLocaleString('zh-CN')} RUB</b></span></div>
+ </article>`).join('');
+ const needsSize=x.dims.reduce((a,b)=>a+b,0)>60;
+ if(x.rate===12)warnings.push('当前汇率为默认示例值 12 RUB/CNY，请改成实际使用的结算汇率。');
+ if(needsSize)warnings.push('商品三边和超过 60cm，香港线路按体积重与实重取大值并按 0.1kg 进位。');
+ warnings.push('部分 CEL 线路按售价换算后的 RUB 货值分档；最终运费以 CEL 系统实际报价为准。');
+ $('warnings').innerHTML=warnings.map(w=>`<div class="alert ${w.includes('默认')?'warn':'info'}">${w}</div>`).join('');
+}
+$('calc').addEventListener('click',calculate);
+['cost','margin','weight','commission','labelFee','rate','length','width','height'].forEach(id=>$(id).addEventListener('input',()=>{if($('routes').children.length>0)calculate()}));
+calculate();
+</script>
+</body>
+</html>
