@@ -24,7 +24,7 @@
   <section class="card" id="authPanel" style="max-width:560px;margin:0 auto 18px">
     <h2>登录 / 注册</h2>
     <p class="sub">使用用户名和密码登录。新账号首次注册后自动获得 3 天免费体验。</p>
-    <div class="field"><label for="authUsername">用户名</label><div class="input-wrap"><input id="authUsername" autocomplete="username" maxlength="32" placeholder="3–32位：英文、数字、点、下划线、短横线"></div></div>
+    <div class="field"><label for="authUsername">用户名</label><div class="input-wrap"><input id="authUsername" autocomplete="username" maxlength="32" placeholder="输入任意用户名，最多 32 个字符"></div></div>
     <div class="field"><label for="authPassword">密码</label><div class="input-wrap"><input id="authPassword" type="password" autocomplete="current-password" minlength="8" placeholder="至少 8 位"></div></div>
     <div class="auth-actions"><button class="btn" id="loginBtn" type="button">登录</button><button class="btn muted-btn" id="registerBtn" type="button">注册新账号</button></div>
     <p class="auth-message" id="authMessage">登录后查看体验期限、会员状态与购买方式。</p>
@@ -195,11 +195,33 @@ let adminUsers = [];
 function setAuthMessage(message, isError=false) {
  const el=$('authMessage'); el.textContent=message; el.classList.toggle('error',isError);
 }
-function usernameEmail(username) { return username.toLowerCase() + '@ozon-pricing.invalid'; }
+function normalizeUsername(value) { return value.trim().normalize('NFC').toLowerCase(); }
+function usernameEmail(username) {
+ // 将任意用户名稳定映射为仅用于 Supabase Auth 的占位邮箱，不把用户名字符限制为邮箱格式。
+ let hash=14695981039346656037n;
+ for(const byte of new TextEncoder().encode(normalizeUsername(username))) {
+   hash ^= BigInt(byte);
+   hash = BigInt.asUintN(64, hash * 1099511628211n);
+ }
+ return 'u'+hash.toString(16).padStart(16,'0')+'@ozon-pricing.invalid';
+}
+function authErrorMessage(error, action='操作') {
+ const raw=String(error?.message||'');
+ const msg=raw.toLowerCase();
+ if(msg.includes('email rate limit exceeded') || msg.includes('rate limit')) return '操作过于频繁，Supabase 暂时限制了请求。请先在 Supabase 的 Authentication → Providers → Email 中关闭邮箱确认（Confirm email），等待一段时间后再试。';
+ if(msg.includes('user already registered') || msg.includes('already been registered') || msg.includes('already exists')) return '这个用户名可能已经注册，请换一个用户名，或直接尝试登录。';
+ if(msg.includes('invalid login credentials')) return '用户名或密码不正确，请检查后重试。';
+ if(msg.includes('password should be at least')) return '密码至少需要 8 位。';
+ if(msg.includes('failed to fetch') || msg.includes('network')) return '连接服务器失败，请检查网络后重试。';
+ if(msg.includes('username')) return '用户名格式不正确，请输入 1–32 个字符。';
+ return action+'失败：'+(raw||'请稍后重试。');
+}
 function validateCredentials() {
- const username=$('authUsername').value.trim().toLowerCase();
+ const username=normalizeUsername($('authUsername').value);
  const password=$('authPassword').value;
- if(!/^[a-z0-9_.-]{3,32}$/.test(username)) throw new Error('用户名需为 3–32 位，只能包含英文小写、数字、点、下划线或短横线。');
+ const usernameLength=Array.from(username).length;
+ if(!usernameLength || usernameLength>32) throw new Error('用户名不能为空，长度最多 32 个字符；中文、英文、数字及常见符号均可使用。');
+ if(/[\\u0000-\\u001F\\u007F]/u.test(username)) throw new Error('用户名不能包含换行或控制字符。');
  if(password.length<8) throw new Error('密码至少需要 8 位。');
  return {username,password};
 }
@@ -273,7 +295,7 @@ async function registerAccount() {
    }
    setAuthMessage('注册成功，正在载入账号…');
    await loadSessionState(data.user);
- } catch(e) { setAuthMessage(e.message||'注册失败，请检查用户名是否已使用。',true); }
+ } catch(e) { setAuthMessage(authErrorMessage(e,'注册'),true); }
  finally { $('registerBtn').disabled=false; }
 }
 async function loginAccount() {
@@ -283,7 +305,7 @@ async function loginAccount() {
    const {data,error}=await supabaseClient.auth.signInWithPassword({email:usernameEmail(username),password});
    if(error) throw error;
    await loadSessionState(data.user);
- } catch(e) { setAuthMessage(e.message||'登录失败。',true); }
+ } catch(e) { setAuthMessage(authErrorMessage(e,'登录'),true); }
  finally { $('loginBtn').disabled=false; }
 }
 async function logoutAccount() {
@@ -336,12 +358,12 @@ document.querySelectorAll('.buy-plan').forEach(btn=>btn.addEventListener('click'
 }));
 $('startTrial').addEventListener('click',()=>{alert('登录后自动开始 3 天免费体验，无需手动开启。');});
 supabaseClient.auth.onAuthStateChange((_event,session)=>{
- setTimeout(()=>loadSessionState(session?.user||null).catch(e=>setAuthMessage(e.message||'读取账号失败。',true)),0);
+ setTimeout(()=>loadSessionState(session?.user||null).catch(e=>setAuthMessage(authErrorMessage(e,'读取账号'),true)),0);
 });
 (async()=>{
  const {data,error}=await supabaseClient.auth.getSession();
- if(error) {setAuthMessage('连接 Supabase 失败：'+error.message,true);return;}
- try { await loadSessionState(data.session?.user||null); } catch(e) { setAuthMessage(e.message||'初始化失败。',true); }
+ if(error) {setAuthMessage(authErrorMessage(error,'连接 Supabase'),true);return;}
+ try { await loadSessionState(data.session?.user||null); } catch(e) { setAuthMessage(authErrorMessage(e,'初始化'),true); }
 })();
 $('calc').addEventListener('click',calculate);
 ['cost','margin','weight','commission','labelFee','rate','length','width','height'].forEach(id=>$(id).addEventListener('input',()=>{if($('routes').children.length>0)calculate()}));
