@@ -12,7 +12,7 @@
 @media(max-width:800px){.layout{grid-template-columns:1fr}.top{align-items:flex-start}.stats{grid-template-columns:1fr 1fr 1fr}.card{padding:18px}}
 @media(max-width:440px){.wrap{padding:20px 12px 32px}.top{display:block}.pill{display:inline-block;margin-top:12px}.stats{grid-template-columns:1fr 1fr}.hero{align-items:flex-start}.hero-right strong{font-size:17px}.route{grid-template-columns:1fr auto}.route-right{min-width:95px}}
 
-.auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.auth-actions{display:flex;gap:10px;flex-wrap:wrap}.auth-actions .btn{width:auto;flex:1}.auth-message{font-size:13px;line-height:1.6;margin-top:12px;color:var(--muted)}.auth-message.error{color:#b42318}.accountbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:13px 16px;border:1px solid var(--line);border-radius:12px;background:#fff}.accountbar small{color:var(--muted)}.admin-panel{margin-top:18px}.admin-table{width:100%;border-collapse:collapse;font-size:13px}.admin-table th,.admin-table td{text-align:left;border-bottom:1px solid var(--line);padding:9px 6px}.admin-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.admin-controls select,.admin-controls input{padding:9px;border:1px solid #dbe2ec;border-radius:8px;max-width:100%}.lock-alert{margin:0 0 14px;padding:14px;border-radius:12px;background:var(--orangebg);color:var(--orange);line-height:1.6}.muted-btn{background:#64748b;box-shadow:none}@media(max-width:600px){.auth-grid{grid-template-columns:1fr}.admin-table{font-size:11px}.admin-table th,.admin-table td{padding:7px 3px}}
+.auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.auth-actions{display:flex;gap:10px;flex-wrap:wrap}.auth-actions .btn{width:auto;flex:1}.auth-message{font-size:13px;line-height:1.6;margin-top:12px;color:var(--muted)}.auth-message.error{color:#b42318}.accountbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:13px 16px;border:1px solid var(--line);border-radius:12px;background:#fff}.accountbar small{color:var(--muted)}.member-badge{display:inline-block;vertical-align:middle;margin-left:6px;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.02em}.member-badge.vip{background:#fff0c2;color:#8a5700;border:1px solid #f1d27a}.member-badge.trial{background:#eaf1ff;color:#2857b8;border:1px solid #cbdcff}.member-badge.expired{background:#f1f3f5;color:#667085;border:1px solid #e1e5ea}.admin-panel{margin-top:18px}.admin-table{width:100%;border-collapse:collapse;font-size:13px}.admin-table th,.admin-table td{text-align:left;border-bottom:1px solid var(--line);padding:9px 6px}.admin-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.admin-controls select,.admin-controls input{padding:9px;border:1px solid #dbe2ec;border-radius:8px;max-width:100%}.lock-alert{margin:0 0 14px;padding:14px;border-radius:12px;background:var(--orangebg);color:var(--orange);line-height:1.6}.muted-btn{background:#64748b;box-shadow:none}@media(max-width:600px){.auth-grid{grid-template-columns:1fr}.admin-table{font-size:11px}.admin-table th,.admin-table td{padding:7px 3px}}
 </style>
 </head>
 <body>
@@ -29,7 +29,7 @@
     <div class="auth-actions"><button class="btn" id="loginBtn" type="button">登录</button><button class="btn muted-btn" id="registerBtn" type="button">注册新账号</button></div>
     <p class="auth-message" id="authMessage">登录后查看体验期限、会员状态与购买方式。</p>
   </section>
-  <div id="accountBar" class="accountbar hidden"><div><strong id="accountName"></strong><br><small id="accountStatus">正在读取会员状态…</small></div><button class="btn muted-btn" id="logoutBtn" type="button" style="width:auto">退出登录</button></div>
+  <div id="accountBar" class="accountbar hidden"><div><strong id="accountName"></strong> <span id="memberBadge" class="member-badge hidden"></span><br><small id="accountStatus">正在读取会员状态…</small></div><button class="btn muted-btn" id="logoutBtn" type="button" style="width:auto">退出登录</button></div>
   <div class="layout hidden" id="calculatorLayout">
     <section class="card">
       <h2>商品参数</h2><p class="sub">只需填写基础数据。由于 CEL 运费可能受售价、货值档位和尺寸影响，尺寸及汇率也可以调整。</p>
@@ -241,6 +241,9 @@ function applyAccessLock() {
  const membershipEnd=currentMembership && currentMembership.expires_at ? new Date(currentMembership.expires_at).getTime() : 0;
  const paidActive=membershipEnd>now && currentMembership.plan_code!=='free';
  const trialActive=trialEnd>now;
+ const badge=$('memberBadge');
+ badge.className='member-badge '+(paidActive?'vip':trialActive?'trial':'expired');
+ badge.textContent=paidActive?'✦ VIP会员':trialActive?'免费体验':'未开通';
  hasAccess=paidActive||trialActive;
  let status='';
  if(paidActive) status='会员有效至 '+formatDate(currentMembership.expires_at)+'（'+({monthly:'月卡',quarterly:'季卡',yearly:'年卡'}[currentMembership.plan_code]||'会员')+'）';
