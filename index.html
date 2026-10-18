@@ -330,11 +330,35 @@ function renderAdminUsers() {
  if(!rows.length) { $('adminUsers').innerHTML='<p class="sub">没有匹配的用户。</p>'; return; }
  $('adminUsers').innerHTML='<table class="admin-table"><thead><tr><th>用户名</th><th>会员状态</th><th>到期时间</th><th>操作</th></tr></thead><tbody>'+rows.map(u=>{
    const planLabel={free:'免费/体验',monthly:'月卡',quarterly:'季卡',yearly:'年卡'}[u.membership.plan_code]||'未知';
-   return '<tr><td>'+escapeHtml(u.username)+'</td><td>'+planLabel+'</td><td>'+formatDate(u.membership.expires_at||u.trial_expires_at)+'</td><td><button class="btn grant-membership" data-user="'+u.user_id+'" type="button" style="width:auto;padding:8px 10px">核验后开通</button></td></tr>';
+   return '<tr><td>'+escapeHtml(u.username)+'</td><td>'+planLabel+'</td><td>'+formatDate(u.membership.expires_at||u.trial_expires_at)+'</td><td><div class="admin-controls"><button class="btn grant-membership" data-user="'+u.user_id+'" type="button" style="width:auto;padding:8px 10px">核验后开通</button><button class="btn muted-btn reset-password" data-username="'+escapeHtml(u.username)+'" type="button" style="width:auto;padding:8px 10px">重置密码</button></div></td></tr>';
  }).join('')+'</tbody></table>';
  document.querySelectorAll('.grant-membership').forEach(btn=>btn.addEventListener('click',()=>grantMembership(btn.dataset.user)));
+ document.querySelectorAll('.reset-password').forEach(btn=>btn.addEventListener('click',()=>resetUserPassword(btn.dataset.username)));
 }
 function escapeHtml(s) { return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+async function resetUserPassword(username) {
+ if(!isAdmin) { $('adminMessage').textContent='没有管理员权限。'; return; }
+ const newPassword=prompt('为用户「'+username+'」设置新密码（至少 8 位）。\n请通过安全方式把新密码告知该用户。');
+ if(newPassword===null) return;
+ if(newPassword.length<8 || newPassword.length>72) { $('adminMessage').textContent='重置失败：新密码必须为 8–72 个字符。'; return; }
+ if(!confirm('确认重置用户「'+username+'」的登录密码？\n此操作会立即生效，用户需要使用新密码登录。')) return;
+ $('adminMessage').textContent='正在重置 '+username+' 的密码…';
+ const {data,error}=await supabaseClient.functions.invoke('admin-reset-password',{body:{username,new_password:newPassword}});
+ if(error) {
+   let detail=error.message||'请求失败';
+   try {
+     if(error.context && typeof error.context.json==='function') {
+       const body=await error.context.json();
+       if(body && body.error) detail=body.error;
+     }
+   } catch {}
+   $('adminMessage').textContent='重置失败：'+detail+'。请检查管理员权限及 Supabase 函数配置。';
+   return;
+ }
+ if(data && data.error) { $('adminMessage').textContent='重置失败：'+data.error; return; }
+ if(!data || data.ok!==true) { $('adminMessage').textContent='重置结果未确认，请刷新后检查；不要重复告知用户新密码。'; return; }
+ $('adminMessage').textContent='已成功重置用户「'+username+'」的密码。请通过安全方式将新密码告知用户，不要在公开群聊中发送。';
+}
 async function grantMembership(userId) {
  if(!isAdmin) return;
  const user=adminUsers.find(u=>u.user_id===userId);
