@@ -1,7 +1,7 @@
 -- OZON Pricing / Supabase schema
 -- Apply this file in Supabase Dashboard > SQL Editor.
 -- IMPORTANT: This migration never stores passwords. Supabase Auth stores password hashes.
--- Username login adapter uses a synthetic email: lower(username) || '@ozon-pricing.invalid'.
+-- Username login adapter maps any normalized username to a stable synthetic email hash; the email is internal only.
 -- Disable email confirmations in Supabase Auth because synthetic addresses cannot receive mail.
 -- Password recovery by email is not available with synthetic usernames; provide an admin-assisted reset process.
 
@@ -13,8 +13,12 @@ create table if not exists public.profiles (
   trial_started_at timestamptz not null default now(),
   trial_expires_at timestamptz not null default (now() + interval '3 days'),
   created_at timestamptz not null default now(),
-  constraint profiles_username_format check (username = lower(username) and username ~ '^[a-z0-9_.-]{3,32}$')
+  constraint profiles_username_format check (username = lower(username) and char_length(username) between 1 and 32 and username !~ '[[:cntrl:]]')
 );
+
+alter table public.profiles drop constraint if exists profiles_username_format;
+alter table public.profiles add constraint profiles_username_format
+  check (username = lower(username) and char_length(username) between 1 and 32 and username !~ '[[:cntrl:]]');
 
 create table if not exists public.memberships (
   user_id uuid primary key references auth.users(id) on delete cascade,
@@ -58,8 +62,8 @@ declare
   v_username text;
 begin
   v_username := lower(trim(coalesce(new.raw_user_meta_data ->> 'username', '')));
-  if v_username !~ '^[a-z0-9_.-]{3,32}$' then
-    raise exception 'Username must be 3-32 chars: letters, numbers, dot, underscore or hyphen';
+  if char_length(v_username) < 1 or char_length(v_username) > 32 or v_username ~ '[[:cntrl:]]' then
+    raise exception 'Username must be 1-32 characters and cannot contain control characters';
   end if;
 
   insert into public.profiles(user_id, username)
