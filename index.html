@@ -398,7 +398,7 @@ document.querySelectorAll('.buy-plan').forEach(btn=>btn.addEventListener('click'
  const plan=btn.dataset.plan;
  selectMembershipPlan(btn.dataset.planCode);
  if(!currentUser) return;
- alert('你选择了：'+plan+'\\n\\n请添加微信联系购买：15081294182\\n登录用户名：'+currentProfile.username+'\\n\\n管理员核实收款后，会在后台为该账号手动开通会员。');
+ alert('你选择了：'+plan+'\n\n请添加微信联系购买：15081294182\n登录用户名：'+currentProfile.username+'\n\n管理员核实收款后，会在后台为该账号手动开通会员。');
 }));
 $('startTrial').addEventListener('click',()=>{alert('登录后自动开始 3 天免费体验，无需手动开启。');});
 supabaseClient.auth.onAuthStateChange((_event,session)=>{
