@@ -210,7 +210,7 @@ function authErrorMessage(error, action='操作') {
  const msg=raw.toLowerCase();
  if(msg.includes('email rate limit exceeded') || msg.includes('rate limit')) return '操作过于频繁，Supabase 暂时限制了请求。请先在 Supabase 的 Authentication → Providers → Email 中关闭邮箱确认（Confirm email），等待一段时间后再试。';
  if(msg.includes('user already registered') || msg.includes('already been registered') || msg.includes('already exists')) return '这个用户名可能已经注册，请换一个用户名，或直接尝试登录。';
- if(msg.includes('invalid login credentials')) return '用户名或密码不正确，请检查后重试。';
+ if(msg.includes('invalid login credentials')) return '用户名或密码不正确，请检查后重试。如需重置密码，请联系微信/电话：15081294182。';
  if(msg.includes('password should be at least')) return '密码至少需要 8 位。';
  if(msg.includes('failed to fetch') || msg.includes('network')) return '连接服务器失败，请检查网络后重试。';
  if(msg.includes('username')) return '用户名格式不正确，请输入 1–32 个字符。';
